@@ -52,24 +52,3 @@
 | **Database**| MongoDB (via Mongoose)                               |
 | **Deployment**| Render (Full Stack)                                |
 
----
-
-## 🧩 Folder Structure
-jobportal/
-│
-├── backend/
-│ ├── routes/
-│ ├── models/
-│ ├── controllers/
-│ ├── middleware/
-│ └── server.js
-│
-├── frontend/
-│ ├── src/
-│ │ ├── components/
-│ │ ├── pages/
-│ │ ├── context/
-│ │ └── App.jsx
-│
-└── README.md
-
