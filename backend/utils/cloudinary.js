@@ -1,10 +1,12 @@
-import { v2 as cloudinary } from "cloudinary";
-import dotenv from "dotenv";
-dotenv.config();
+import mongoose from "mongoose";
 
-cloudinary.config({
-  cloud_name: process.env.CLOUD_NAME,
-  api_key: process.env.API_KEY,
-  api_secret: process.env.API_SECRET,
-});
-export default cloudinary;
+const connectDB = async () => {
+  try {
+    await mongoose.connect(process.env.MONGO_URI);
+    console.log("✅ MongoDB connected successfully");
+  } catch (error) {
+    console.log("❌ MongoDB connection error:", error);
+  }
+};
+
+export default connectDB;

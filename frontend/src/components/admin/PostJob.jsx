@@ -17,8 +17,7 @@ import { JOB_API_END_POINT } from "@/utils/constant";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import { Loader2 } from "lucide-react";
-
-const companyArray = [];
+import { motion } from "framer-motion";
 
 const PostJob = () => {
   const [input, setInput] = useState({
@@ -32,10 +31,12 @@ const PostJob = () => {
     position: 0,
     companyId: "",
   });
+
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const { companies } = useSelector((store) => store.company);
+
   const changeEventHandler = (e) => {
     setInput({ ...input, [e.target.name]: e.target.value });
   };
@@ -49,14 +50,15 @@ const PostJob = () => {
 
   const submitHandler = async (e) => {
     e.preventDefault();
+
     try {
       setLoading(true);
+
       const res = await axios.post(`${JOB_API_END_POINT}/post`, input, {
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         withCredentials: true,
       });
+
       if (res.data.success) {
         toast.success(res.data.message);
         navigate("/admin/jobs");
@@ -69,130 +71,162 @@ const PostJob = () => {
   };
 
   return (
-    <div>
+    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 pb-16">
       <Navbar />
-      <div className="flex items-center justify-center w-screen my-5">
+
+      {/* Wrapper */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4 }}
+        className="flex items-center justify-center w-full mt-8 px-4"
+      >
         <form
           onSubmit={submitHandler}
-          className="p-8 max-w-4xl border border-gray-200 shadow-lg rounded-md"
+          className="p-10 max-w-4xl w-full bg-white/80 backdrop-blur-xl border border-gray-200 shadow-xl rounded-2xl"
         >
-          <div className="grid grid-cols-2 gap-2">
+          {/* Heading */}
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">
+            Post a New Job
+          </h1>
+          <div className="h-[3px] w-40 bg-gradient-to-r from-purple-600 to-transparent rounded-full mb-6"></div>
+
+          {/* GRID FORM */}
+          <div className="grid grid-cols-2 gap-6">
             <div>
-              <Label>Title</Label>
+              <Label className="font-medium">Job Title</Label>
               <Input
-                type="text"
                 name="title"
                 value={input.title}
                 onChange={changeEventHandler}
-                className="focus-visible:ring-offset-0 focus-visible:ring-0 my-1"
+                placeholder="Software Engineer"
+                className="rounded-xl py-6 mt-1"
               />
             </div>
+
             <div>
-              <Label>Description</Label>
+              <Label className="font-medium">Description</Label>
               <Input
-                type="text"
                 name="description"
                 value={input.description}
                 onChange={changeEventHandler}
-                className="focus-visible:ring-offset-0 focus-visible:ring-0 my-1"
+                placeholder="Job description"
+                className="rounded-xl py-6 mt-1"
               />
             </div>
+
             <div>
-              <Label>Requirements</Label>
+              <Label className="font-medium">Requirements</Label>
               <Input
-                type="text"
                 name="requirements"
                 value={input.requirements}
                 onChange={changeEventHandler}
-                className="focus-visible:ring-offset-0 focus-visible:ring-0 my-1"
+                placeholder="React, Node.js, MongoDB"
+                className="rounded-xl py-6 mt-1"
               />
             </div>
+
             <div>
-              <Label>Salary</Label>
+              <Label className="font-medium">Salary (LPA)</Label>
               <Input
-                type="text"
                 name="salary"
                 value={input.salary}
                 onChange={changeEventHandler}
-                className="focus-visible:ring-offset-0 focus-visible:ring-0 my-1"
+                placeholder="4 - 12 LPA"
+                className="rounded-xl py-6 mt-1"
               />
             </div>
+
             <div>
-              <Label>Location</Label>
+              <Label className="font-medium">Location</Label>
               <Input
-                type="text"
                 name="location"
                 value={input.location}
                 onChange={changeEventHandler}
-                className="focus-visible:ring-offset-0 focus-visible:ring-0 my-1"
+                placeholder="Delhi, Bangalore..."
+                className="rounded-xl py-6 mt-1"
               />
             </div>
+
             <div>
-              <Label>Job Type</Label>
+              <Label className="font-medium">Job Type</Label>
               <Input
-                type="text"
                 name="jobType"
                 value={input.jobType}
                 onChange={changeEventHandler}
-                className="focus-visible:ring-offset-0 focus-visible:ring-0 my-1"
+                placeholder="Full-time / Remote"
+                className="rounded-xl py-6 mt-1"
               />
             </div>
+
             <div>
-              <Label>Experience Level</Label>
+              <Label className="font-medium">Experience (Years)</Label>
               <Input
-                type="text"
                 name="experience"
                 value={input.experience}
                 onChange={changeEventHandler}
-                className="focus-visible:ring-offset-0 focus-visible:ring-0 my-1"
+                placeholder="0 - 5"
+                className="rounded-xl py-6 mt-1"
               />
             </div>
+
             <div>
-              <Label>No of Postion</Label>
+              <Label className="font-medium">No. of Positions</Label>
               <Input
                 type="number"
                 name="position"
                 value={input.position}
                 onChange={changeEventHandler}
-                className="focus-visible:ring-offset-0 focus-visible:ring-0 my-1"
+                className="rounded-xl py-6 mt-1"
               />
             </div>
-            {companies.length > 0 && (
-              <Select onValueChange={selectChangeHandler}>
-                <SelectTrigger className="w-[180px]">
-                  <SelectValue placeholder="Select a Company" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectGroup>
-                    {companies.map((company) => {
-                      return (
-                        <SelectItem value={company?.name?.toLowerCase()}>
+
+            {/* Select Company */}
+            <div className="col-span-2">
+              <Label className="font-medium">Select Company</Label>
+              {companies.length > 0 ? (
+                <Select onValueChange={selectChangeHandler}>
+                  <SelectTrigger className="w-full rounded-xl mt-1 py-6">
+                    <SelectValue placeholder="Choose a company" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectGroup>
+                      {companies.map((company, idx) => (
+                        <SelectItem
+                          key={idx}
+                          value={company.name.toLowerCase()}
+                        >
                           {company.name}
                         </SelectItem>
-                      );
-                    })}
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
-            )}
+                      ))}
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+              ) : (
+                <p className="text-sm text-red-600 mt-2 font-medium">
+                  * Please register a company first.
+                </p>
+              )}
+            </div>
           </div>
+
+          {/* Submit Button */}
           {loading ? (
-            <Button className="w-full my-4">
-              {" "}
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Please wait{" "}
+            <Button className="w-full my-6 rounded-xl py-6">
+              <Loader2 className="mr-2 h-5 w-5 animate-spin" /> Please wait
             </Button>
           ) : (
-            <Button type="submit" className="w-full my-4">
+            <Button
+              type="submit"
+              className="w-full my-6 rounded-xl py-6 text-white 
+                         font-semibold bg-gradient-to-r 
+                         from-purple-600 to-purple-800 hover:opacity-90"
+            >
               Post New Job
             </Button>
           )}
-          {companies.length === 0 && (
-            <p className="text-xs text-red-600 font-bold text-center my-3">
-              *Please register a company first, before posting a jobs
-            </p>
-          )}
         </form>
-      </div>
+      </motion.div>
     </div>
   );
 };

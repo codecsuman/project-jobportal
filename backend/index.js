@@ -3,50 +3,51 @@ import cookieParser from "cookie-parser";
 import cors from "cors";
 import dotenv from "dotenv";
 import connectDB from "./utils/db.js";
+
 import userRoute from "./routes/user.route.js";
 import companyRoute from "./routes/company.route.js";
 import jobRoute from "./routes/job.route.js";
 import applicationRoute from "./routes/application.route.js";
+
 import path from "path";
 import { fileURLToPath } from "url";
 
 dotenv.config();
 
+const app = express();
+
+// Fix __dirname for ES modules
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const PORT = process.env.PORT || 8000;
-const app = express();
-
-// ---------- MIDDLEWARE ----------
+// Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-// ---------- CORS FIX (ALLOW SAME DOMAIN) ----------
-app.use(
-  cors({
-    origin: true,          // allow same-origin
-    credentials: true,
-    methods: ["GET", "POST", "PUT", "DELETE"],
-  })
-);
+const corsOptions = {
+  origin: process.env.FRONTEND_URL || "http://localhost:5173",
+  credentials: true,
+};
 
-// ---------- API ROUTES ----------
+app.use(cors(corsOptions));
+
+const PORT = process.env.PORT || 8000;
+
+// API Routes
 app.use("/api/v1/user", userRoute);
 app.use("/api/v1/company", companyRoute);
 app.use("/api/v1/job", jobRoute);
 app.use("/api/v1/application", applicationRoute);
 
-// ---------- FRONTEND BUILD SERVE ----------
+// Serve frontend
 app.use(express.static(path.join(__dirname, "../frontend/dist")));
 
-app.get("*", (req, res) => {
+app.get("*", (_, res) => {
   res.sendFile(path.join(__dirname, "../frontend/dist/index.html"));
 });
 
-// ---------- SERVER ----------
-connectDB();
 app.listen(PORT, () => {
-  console.log(`🚀 Server running on port ${PORT}`);
+  connectDB();
+  console.log(`✅ Server running on port ${PORT}`);
 });

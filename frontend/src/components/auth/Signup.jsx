@@ -10,7 +10,8 @@ import { USER_API_END_POINT } from "@/utils/constant";
 import { toast } from "sonner";
 import { useDispatch, useSelector } from "react-redux";
 import { setLoading } from "@/redux/authSlice";
-import { Loader2, Eye, EyeOff } from "lucide-react";
+import { Loader2, Upload } from "lucide-react";
+import { motion } from "framer-motion";
 
 const Signup = () => {
   const [input, setInput] = useState({
@@ -22,32 +23,20 @@ const Signup = () => {
     file: "",
   });
 
-  const [showPassword, setShowPassword] = useState(false);
-
   const { loading, user } = useSelector((store) => store.auth);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  // Handle text input
   const changeEventHandler = (e) => {
-    setInput({ ...input, [e.target.name]: e.target.value.trim() });
+    setInput({ ...input, [e.target.name]: e.target.value });
   };
 
-  // Handle file upload
   const changeFileHandler = (e) => {
     setInput({ ...input, file: e.target.files?.[0] });
   };
 
-  // Handle submit
   const submitHandler = async (e) => {
     e.preventDefault();
-    if (loading) return;
-
-    // ✅ Validation
-    if (!input.fullname || !input.email || !input.password || !input.role) {
-      toast.error("Please fill all required fields");
-      return;
-    }
 
     const formData = new FormData();
     formData.append("fullname", input.fullname);
@@ -59,164 +48,162 @@ const Signup = () => {
 
     try {
       dispatch(setLoading(true));
-
       const res = await axios.post(`${USER_API_END_POINT}/register`, formData, {
         headers: { "Content-Type": "multipart/form-data" },
         withCredentials: true,
       });
 
       if (res.data.success) {
-        toast.success(res.data.message || "Signup successful!");
+        toast.success(res.data.message);
         navigate("/login");
       }
     } catch (error) {
-      console.error(error);
-      toast.error(
-        error.response?.data?.message || error.message || "Signup failed"
-      );
+      toast.error(error.response?.data?.message || "Signup failed");
     } finally {
       dispatch(setLoading(false));
     }
   };
 
-  // Redirect if already logged in
   useEffect(() => {
     if (user) navigate("/");
-  }, [user, navigate]);
+  }, []);
 
   return (
-    <div>
+    <div className="min-h-screen bg-gradient-to-br from-purple-50 to-indigo-100">
       <Navbar />
-      <div className="flex items-center justify-center max-w-7xl mx-auto">
-        <form
-          onSubmit={submitHandler}
-          className="w-1/2 border border-gray-200 rounded-md p-6 my-10 shadow-sm"
-        >
-          <h1 className="font-bold text-2xl mb-6 text-center">Sign Up</h1>
 
-          {/* Full Name */}
-          <div className="my-3">
-            <Label>Full Name</Label>
+      <div className="flex items-center justify-center px-4 sm:px-0 mt-10">
+        <motion.form
+          initial={{ opacity: 0, y: 40 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, ease: "easeOut" }}
+          onSubmit={submitHandler}
+          className="w-full max-w-xl bg-white/60 backdrop-blur-xl border border-white/40 
+                     shadow-2xl rounded-2xl p-8"
+        >
+          <h1 className="text-3xl font-bold text-center text-gray-800 mb-6">
+            Create Your Account 🚀
+          </h1>
+
+          {/* Full name */}
+          <div className="mb-4">
+            <Label className="text-gray-700">Full Name</Label>
             <Input
               type="text"
               name="fullname"
               value={input.fullname}
               onChange={changeEventHandler}
-              placeholder="Enter your full name"
+              placeholder="John Doe"
+              className="mt-1"
             />
           </div>
 
           {/* Email */}
-          <div className="my-3">
-            <Label>Email</Label>
+          <div className="mb-4">
+            <Label className="text-gray-700">Email</Label>
             <Input
               type="email"
               name="email"
               value={input.email}
               onChange={changeEventHandler}
-              placeholder="Enter your email"
+              placeholder="example@gmail.com"
+              className="mt-1"
             />
           </div>
 
-          {/* Phone Number */}
-          <div className="my-3">
-            <Label>Phone Number</Label>
+          {/* Phone number */}
+          <div className="mb-4">
+            <Label className="text-gray-700">Phone Number</Label>
             <Input
               type="text"
               name="phoneNumber"
               value={input.phoneNumber}
               onChange={changeEventHandler}
-              placeholder="Enter your phone number"
+              placeholder="0000000000"
+              className="mt-1"
             />
           </div>
 
           {/* Password */}
-          <div className="my-3 relative">
-            <Label>Password</Label>
+          <div className="mb-4">
+            <Label className="text-gray-700">Password</Label>
             <Input
-              type={showPassword ? "text" : "password"}
+              type="password"
               name="password"
               value={input.password}
               onChange={changeEventHandler}
-              placeholder="Enter your password"
+              placeholder="********"
+              className="mt-1"
             />
-            <div
-              className="absolute right-3 top-9 cursor-pointer"
-              onClick={() => setShowPassword(!showPassword)}
-            >
-              {showPassword ? (
-                <EyeOff className="h-4 w-4 text-gray-500" />
-              ) : (
-                <Eye className="h-4 w-4 text-gray-500" />
-              )}
+          </div>
+
+          {/* Role + File Upload */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
+
+            {/* Role selection */}
+            <div>
+              <Label className="text-gray-700">Select Role</Label>
+              <RadioGroup className="flex gap-5 mt-2">
+                <div className="flex items-center gap-2">
+                  <Input
+                    type="radio"
+                    name="role"
+                    value="student"
+                    checked={input.role === "student"}
+                    onChange={changeEventHandler}
+                    className="cursor-pointer"
+                  />
+                  <Label>Student</Label>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <Input
+                    type="radio"
+                    name="role"
+                    value="recruiter"
+                    checked={input.role === "recruiter"}
+                    onChange={changeEventHandler}
+                    className="cursor-pointer"
+                  />
+                  <Label>Recruiter</Label>
+                </div>
+              </RadioGroup>
+            </div>
+
+            {/* File upload */}
+            <div>
+              <Label className="text-gray-700">Profile Picture</Label>
+              <div className="border border-gray-300 rounded-md p-2 flex items-center gap-3 bg-white mt-1">
+                <Upload className="w-5 h-5 text-gray-500" />
+                <Input
+                  type="file"
+                  accept="image/*"
+                  onChange={changeFileHandler}
+                  className="cursor-pointer border-none p-0"
+                />
+              </div>
             </div>
           </div>
 
-          {/* Role and Profile Upload */}
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between mt-5 gap-4">
-            <RadioGroup className="flex items-center gap-6">
-              <div className="flex items-center space-x-2">
-                <Input
-                  id="student"
-                  type="radio"
-                  name="role"
-                  value="student"
-                  checked={input.role === "student"}
-                  onChange={changeEventHandler}
-                  className="cursor-pointer"
-                />
-                <Label htmlFor="student">Student</Label>
-              </div>
-
-              <div className="flex items-center space-x-2">
-                <Input
-                  id="recruiter"
-                  type="radio"
-                  name="role"
-                  value="recruiter"
-                  checked={input.role === "recruiter"}
-                  onChange={changeEventHandler}
-                  className="cursor-pointer"
-                />
-                <Label htmlFor="recruiter">Recruiter</Label>
-              </div>
-            </RadioGroup>
-
-            <div className="flex items-center gap-2">
-              <Label>Profile</Label>
-              <Input
-                accept="image/*"
-                type="file"
-                onChange={changeFileHandler}
-                className="cursor-pointer"
-              />
-              {input.file && (
-                <p className="text-xs text-gray-600 truncate max-w-[100px]">
-                  {input.file.name}
-                </p>
-              )}
-            </div>
-          </div>
-
-          {/* Submit Button */}
+          {/* Submit button */}
           {loading ? (
-            <Button disabled className="w-full my-5">
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Please wait...
+            <Button className="w-full mt-6" disabled>
+              <Loader2 className="animate-spin mr-2" /> Please wait...
             </Button>
           ) : (
-            <Button type="submit" className="w-full my-5">
-              Sign Up
+            <Button type="submit" className="w-full mt-6 text-base">
+              Create Account
             </Button>
           )}
 
-          {/* Redirect to Login */}
-          <p className="text-sm text-center">
+          {/* Already have account */}
+          <p className="text-center mt-4 text-sm text-gray-700">
             Already have an account?{" "}
             <Link to="/login" className="text-blue-600 font-medium">
               Login
             </Link>
           </p>
-        </form>
+        </motion.form>
       </div>
     </div>
   );

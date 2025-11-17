@@ -10,7 +10,8 @@ import { USER_API_END_POINT } from "@/utils/constant";
 import { toast } from "sonner";
 import { useDispatch, useSelector } from "react-redux";
 import { setLoading, setUser } from "@/redux/authSlice";
-import { Loader2, Eye, EyeOff } from "lucide-react";
+import { Loader2 } from "lucide-react";
+import { motion } from "framer-motion";
 
 const Login = () => {
   const [input, setInput] = useState({
@@ -19,109 +20,90 @@ const Login = () => {
     role: "",
   });
 
-  const [showPassword, setShowPassword] = useState(false);
-
   const { loading, user } = useSelector((store) => store.auth);
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  // Handle input changes
   const changeEventHandler = (e) => {
-    setInput({ ...input, [e.target.name]: e.target.value.trim() });
+    setInput({ ...input, [e.target.name]: e.target.value });
   };
 
-  // Handle form submit
   const submitHandler = async (e) => {
     e.preventDefault();
-
-    if (loading) return; // prevent double submission
-
-    // ✅ Basic validation
-    if (!input.email || !input.password || !input.role) {
-      toast.error("Please fill all fields");
-      return;
-    }
-
     try {
       dispatch(setLoading(true));
-
       const res = await axios.post(`${USER_API_END_POINT}/login`, input, {
         headers: { "Content-Type": "application/json" },
         withCredentials: true,
       });
-
       if (res.data.success) {
         dispatch(setUser(res.data.user));
-        toast.success(res.data.message || "Login successful");
         navigate("/");
+        toast.success(res.data.message);
       }
     } catch (error) {
-      console.error(error);
-      toast.error(
-        error.response?.data?.message || error.message || "Login failed"
-      );
+      toast.error(error.response?.data?.message || "Login failed");
     } finally {
       dispatch(setLoading(false));
     }
   };
 
-  // Redirect if already logged in
   useEffect(() => {
-    if (user) {
-      navigate("/");
-    }
-  }, [user, navigate]);
+    if (user) navigate("/");
+  }, []);
 
   return (
-    <div>
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
       <Navbar />
-      <div className="flex items-center justify-center max-w-7xl mx-auto">
-        <form
+
+      {/* Center wrapper */}
+      <div className="flex items-center justify-center px-4 sm:px-0 mt-10">
+
+        {/* Animated Card */}
+        <motion.form
+          initial={{ opacity: 0, y: 40 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, ease: "easeOut" }}
           onSubmit={submitHandler}
-          className="w-1/2 border border-gray-200 rounded-md p-6 my-10 shadow-sm"
+          className="w-full max-w-md bg-white/60 backdrop-blur-xl shadow-xl border border-white/40 
+                     rounded-2xl p-8"
         >
-          <h1 className="font-bold text-2xl mb-6 text-center">Login</h1>
+          <h1 className="text-3xl font-bold text-center text-gray-800 mb-6">
+            Welcome Back 👋
+          </h1>
 
           {/* Email */}
-          <div className="my-3">
-            <Label>Email</Label>
+          <div className="mb-4">
+            <Label className="text-gray-700">Email</Label>
             <Input
               type="email"
               value={input.email}
               name="email"
               onChange={changeEventHandler}
               placeholder="Enter your email"
+              className="mt-1"
             />
           </div>
 
           {/* Password */}
-          <div className="my-3 relative">
-            <Label>Password</Label>
+          <div className="mb-4">
+            <Label className="text-gray-700">Password</Label>
             <Input
-              type={showPassword ? "text" : "password"}
+              type="password"
               value={input.password}
               name="password"
               onChange={changeEventHandler}
               placeholder="Enter your password"
+              className="mt-1"
             />
-            <div
-              className="absolute right-3 top-9 cursor-pointer"
-              onClick={() => setShowPassword(!showPassword)}
-            >
-              {showPassword ? (
-                <EyeOff className="h-4 w-4 text-gray-500" />
-              ) : (
-                <Eye className="h-4 w-4 text-gray-500" />
-              )}
-            </div>
           </div>
 
-          {/* Role Selection */}
-          <div className="flex items-center justify-center my-4">
-            <RadioGroup className="flex items-center gap-6">
-              <div className="flex items-center space-x-2">
+          {/* Role selection */}
+          <div className="mt-4">
+            <Label className="text-gray-700">Select Role</Label>
+            <RadioGroup className="flex items-center gap-6 mt-2 text-gray-700">
+              <div className="flex items-center gap-2">
                 <Input
-                  id="student"
                   type="radio"
                   name="role"
                   value="student"
@@ -129,12 +111,11 @@ const Login = () => {
                   onChange={changeEventHandler}
                   className="cursor-pointer"
                 />
-                <Label htmlFor="student">Student</Label>
+                <Label>Student</Label>
               </div>
 
-              <div className="flex items-center space-x-2">
+              <div className="flex items-center gap-2">
                 <Input
-                  id="recruiter"
                   type="radio"
                   name="role"
                   value="recruiter"
@@ -142,30 +123,30 @@ const Login = () => {
                   onChange={changeEventHandler}
                   className="cursor-pointer"
                 />
-                <Label htmlFor="recruiter">Recruiter</Label>
+                <Label>Recruiter</Label>
               </div>
             </RadioGroup>
           </div>
 
           {/* Submit button */}
           {loading ? (
-            <Button disabled className="w-full my-5">
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Please wait...
+            <Button className="w-full mt-6" disabled>
+              <Loader2 className="animate-spin mr-2" /> Please wait...
             </Button>
           ) : (
-            <Button type="submit" className="w-full my-5">
+            <Button type="submit" className="w-full mt-6 text-base">
               Login
             </Button>
           )}
 
-          {/* Redirect to signup */}
-          <p className="text-sm text-center">
+          {/* Signup */}
+          <p className="text-center mt-4 text-sm text-gray-700">
             Don’t have an account?{" "}
             <Link to="/signup" className="text-blue-600 font-medium">
-              Sign Up
+              Sign up
             </Link>
           </p>
-        </form>
+        </motion.form>
       </div>
     </div>
   );
