@@ -16,6 +16,9 @@ dotenv.config();
 
 const app = express();
 
+// 🟢 REQUIRED FOR RENDER (IMPORTANT!)
+app.set("trust proxy", 1);
+
 // Fix __dirname for ES modules
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -25,11 +28,13 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
+// 🟢 FIXED CORS CONFIG (RENDER SAFE)
 const corsOptions = {
   origin: process.env.FRONTEND_URL || "https://project-jobportal-4.onrender.com",
   credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  allowedHeaders: ["Content-Type", "Authorization"],
 };
-
 app.use(cors(corsOptions));
 
 const PORT = process.env.PORT || 8000;
