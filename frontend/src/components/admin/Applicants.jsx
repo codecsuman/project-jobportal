@@ -25,12 +25,12 @@ const Applicants = () => {
           dispatch(setAllApplicants(res.data.job));
         }
       } catch (error) {
-        console.log("❌ Failed to load applicants:", error);
+        console.log("Failed to load applicants:", error);
       }
     };
 
     fetchAllApplicants();
-  }, [params.id, dispatch]);   ✅ FIXED
+  }, [params.id, dispatch]);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 pb-16">
