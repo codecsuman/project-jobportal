@@ -20,27 +20,28 @@ const Applicants = () => {
           `${APPLICATION_API_END_POINT}/${params.id}/applicants`,
           { withCredentials: true }
         );
-        dispatch(setAllApplicants(res.data.job));
+
+        if (res.data.success) {
+          dispatch(setAllApplicants(res.data.job));
+        }
       } catch (error) {
-        console.log(error);
+        console.log("❌ Failed to load applicants:", error);
       }
     };
+
     fetchAllApplicants();
-  }, []);
+  }, [params.id, dispatch]);   ✅ FIXED
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 pb-16">
-      {/* Navbar */}
       <Navbar />
 
-      {/* Container */}
       <motion.div
         initial={{ opacity: 0, y: 15 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4 }}
         className="max-w-7xl mx-auto px-4 mt-10"
       >
-        {/* Header */}
         <h1 className="text-3xl font-bold text-gray-900 mb-3">
           Applicants{" "}
           <span className="text-purple-700">
@@ -48,10 +49,8 @@ const Applicants = () => {
           </span>
         </h1>
 
-        {/* Gradient underline */}
         <div className="h-[3px] w-40 rounded-full bg-gradient-to-r from-purple-600 to-transparent mb-6"></div>
 
-        {/* Table Wrapper */}
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}

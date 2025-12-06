@@ -11,12 +11,13 @@ import { useSelector } from "react-redux";
 import useGetAppliedJobs from "@/hooks/useGetAppliedJobs";
 import { motion } from "framer-motion";
 
-const isResume = true;
-
 const Profile = () => {
   useGetAppliedJobs();
   const [open, setOpen] = useState(false);
   const { user } = useSelector((store) => store.auth);
+
+  // ✅ FIX: Dynamic resume check
+  const isResume = user?.profile?.resume;
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 pb-16">
@@ -34,7 +35,7 @@ const Profile = () => {
           <div className="flex items-center gap-5">
             <Avatar className="h-24 w-24 ring-4 ring-purple-300 shadow-lg">
               <AvatarImage
-                src="https://www.shutterstock.com/image-vector/circle-line-simple-design-logo-600nw-2174926871.jpg"
+                src={user?.profile?.profilePhoto || "https://via.placeholder.com/150"}
                 alt="profile"
               />
             </Avatar>
@@ -71,7 +72,7 @@ const Profile = () => {
           <h2 className="font-semibold text-lg text-gray-800 mb-2">Skills</h2>
           <div className="flex flex-wrap items-center gap-2">
             {user?.profile?.skills?.length > 0 ? (
-              user?.profile?.skills.map((item, index) => (
+              user.profile.skills.map((item, index) => (
                 <Badge
                   key={index}
                   className="bg-purple-100 text-purple-700 px-3 py-1 font-medium"
@@ -92,6 +93,7 @@ const Profile = () => {
           {isResume ? (
             <a
               target="_blank"
+              rel="noopener noreferrer"
               href={user?.profile?.resume}
               className="text-blue-600 hover:underline block mt-2"
             >

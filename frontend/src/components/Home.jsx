@@ -14,11 +14,12 @@ const Home = () => {
   const { user } = useSelector((store) => store.auth);
   const navigate = useNavigate();
 
+  // ✅ FIXED DEPENDENCY ARRAY
   useEffect(() => {
     if (user?.role === "recruiter") {
       navigate("/admin/companies");
     }
-  }, []);
+  }, [user, navigate]);
 
   return (
     <div className="overflow-x-hidden">

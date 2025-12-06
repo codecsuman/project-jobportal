@@ -48,18 +48,16 @@ const Login = () => {
     }
   };
 
+  // ✅ FIXED DEPENDENCY ARRAY
   useEffect(() => {
     if (user) navigate("/");
-  }, []);
+  }, [user, navigate]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
       <Navbar />
 
-      {/* Center wrapper */}
       <div className="flex items-center justify-center px-4 sm:px-0 mt-10">
-
-        {/* Animated Card */}
         <motion.form
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
@@ -72,36 +70,29 @@ const Login = () => {
             Welcome Back 👋
           </h1>
 
-          {/* Email */}
           <div className="mb-4">
-            <Label className="text-gray-700">Email</Label>
+            <Label>Email</Label>
             <Input
               type="email"
               value={input.email}
               name="email"
               onChange={changeEventHandler}
-              placeholder="Enter your email"
-              className="mt-1"
             />
           </div>
 
-          {/* Password */}
           <div className="mb-4">
-            <Label className="text-gray-700">Password</Label>
+            <Label>Password</Label>
             <Input
               type="password"
               value={input.password}
               name="password"
               onChange={changeEventHandler}
-              placeholder="Enter your password"
-              className="mt-1"
             />
           </div>
 
-          {/* Role selection */}
           <div className="mt-4">
-            <Label className="text-gray-700">Select Role</Label>
-            <RadioGroup className="flex items-center gap-6 mt-2 text-gray-700">
+            <Label>Select Role</Label>
+            <RadioGroup className="flex gap-6 mt-2">
               <div className="flex items-center gap-2">
                 <Input
                   type="radio"
@@ -109,7 +100,6 @@ const Login = () => {
                   value="student"
                   checked={input.role === "student"}
                   onChange={changeEventHandler}
-                  className="cursor-pointer"
                 />
                 <Label>Student</Label>
               </div>
@@ -121,26 +111,23 @@ const Login = () => {
                   value="recruiter"
                   checked={input.role === "recruiter"}
                   onChange={changeEventHandler}
-                  className="cursor-pointer"
                 />
                 <Label>Recruiter</Label>
               </div>
             </RadioGroup>
           </div>
 
-          {/* Submit button */}
           {loading ? (
             <Button className="w-full mt-6" disabled>
               <Loader2 className="animate-spin mr-2" /> Please wait...
             </Button>
           ) : (
-            <Button type="submit" className="w-full mt-6 text-base">
+            <Button type="submit" className="w-full mt-6">
               Login
             </Button>
           )}
 
-          {/* Signup */}
-          <p className="text-center mt-4 text-sm text-gray-700">
+          <p className="text-center mt-4 text-sm">
             Don’t have an account?{" "}
             <Link to="/signup" className="text-blue-600 font-medium">
               Sign up

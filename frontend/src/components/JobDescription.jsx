@@ -13,12 +13,7 @@ const JobDescription = () => {
   const { singleJob } = useSelector((store) => store.job);
   const { user } = useSelector((store) => store.auth);
 
-  const isInitiallyApplied =
-    singleJob?.applications?.some(
-      (application) => application.applicant === user?._id
-    ) || false;
-
-  const [isApplied, setIsApplied] = useState(isInitiallyApplied);
+  const [isApplied, setIsApplied] = useState(false);
 
   const params = useParams();
   const jobId = params.id;
@@ -28,13 +23,12 @@ const JobDescription = () => {
     try {
       const res = await axios.get(
         `${APPLICATION_API_END_POINT}/apply/${jobId}`,
-        {
-          withCredentials: true,
-        }
+        { withCredentials: true }
       );
 
       if (res.data.success) {
         setIsApplied(true);
+
         const updatedJob = {
           ...singleJob,
           applications: [
@@ -47,7 +41,7 @@ const JobDescription = () => {
         toast.success(res.data.message);
       }
     } catch (error) {
-      toast.error(error.response.data.message);
+      toast.error(error.response?.data?.message || "Failed to apply job");
     }
   };
 
@@ -61,16 +55,20 @@ const JobDescription = () => {
 
         if (res.data.success) {
           dispatch(setSingleJob(res.data.job));
-          setIsApplied(
-            res.data.job.applications.some(
-              (application) => application.applicant === user?._id
-            )
+
+          // ✅ Check if user already applied
+          const applied = res.data.job.applications.some(
+            (application) =>
+              String(application.applicant) === String(user?._id)
           );
+
+          setIsApplied(applied);
         }
       } catch (error) {
         console.log(error);
       }
     };
+
     fetchSingleJob();
   }, [jobId, dispatch, user?._id]);
 
@@ -87,9 +85,10 @@ const JobDescription = () => {
           <h1 className="text-3xl font-extrabold text-gray-900">
             {singleJob?.title}
           </h1>
+
           <div className="mt-4 flex items-center gap-3 flex-wrap">
             <Badge className="bg-blue-100 text-blue-700 font-semibold">
-              {singleJob?.postion} Positions
+              {singleJob?.position} Positions
             </Badge>
             <Badge className="bg-purple-100 text-purple-700 font-semibold">
               {singleJob?.jobType}
@@ -101,9 +100,9 @@ const JobDescription = () => {
         </div>
 
         <Button
-          onClick={isApplied ? null : applyJobHandler}
+          onClick={isApplied ? undefined : applyJobHandler}
           disabled={isApplied}
-          className={`px-6 py-2 rounded-xl text-white text-base shadow-md transition 
+          className={`px-6 py-2 rounded-xl text-white shadow-md transition 
             ${isApplied
               ? "bg-gray-500 cursor-not-allowed"
               : "bg-gradient-to-r from-purple-600 to-purple-800 hover:opacity-90"
@@ -113,10 +112,9 @@ const JobDescription = () => {
         </Button>
       </div>
 
-      {/* Divider */}
       <div className="mt-6 h-[2px] bg-gradient-to-r from-purple-500/60 to-transparent" />
 
-      {/* DETAILS SECTION */}
+      {/* DETAILS */}
       <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6 text-gray-700 text-[15px]">
         <Detail label="Role" value={singleJob?.title} />
         <Detail label="Location" value={singleJob?.location} />
@@ -128,13 +126,15 @@ const JobDescription = () => {
         />
         <Detail
           label="Posted On"
-          value={singleJob?.createdAt.split("T")[0]}
+          value={singleJob?.createdAt?.split("T")[0]}
         />
       </div>
 
       {/* DESCRIPTION */}
       <div className="mt-8">
-        <h2 className="text-xl font-bold mb-2 text-gray-900">Job Description</h2>
+        <h2 className="text-xl font-bold mb-2 text-gray-900">
+          Job Description
+        </h2>
         <p className="text-gray-700 leading-relaxed">
           {singleJob?.description}
         </p>
@@ -143,7 +143,6 @@ const JobDescription = () => {
   );
 };
 
-/* Reusable Component */
 const Detail = ({ label, value }) => (
   <div>
     <p className="font-semibold text-gray-900">{label}:</p>

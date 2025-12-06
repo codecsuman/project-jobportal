@@ -64,9 +64,10 @@ const Signup = () => {
     }
   };
 
+  // ✅ FIXED DEPENDENCY ARRAY
   useEffect(() => {
     if (user) navigate("/");
-  }, []);
+  }, [user, navigate]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 to-indigo-100">
@@ -85,123 +86,56 @@ const Signup = () => {
             Create Your Account 🚀
           </h1>
 
-          {/* Full name */}
           <div className="mb-4">
-            <Label className="text-gray-700">Full Name</Label>
-            <Input
-              type="text"
-              name="fullname"
-              value={input.fullname}
-              onChange={changeEventHandler}
-              placeholder="John Doe"
-              className="mt-1"
-            />
+            <Label>Full Name</Label>
+            <Input name="fullname" value={input.fullname} onChange={changeEventHandler} />
           </div>
 
-          {/* Email */}
           <div className="mb-4">
-            <Label className="text-gray-700">Email</Label>
-            <Input
-              type="email"
-              name="email"
-              value={input.email}
-              onChange={changeEventHandler}
-              placeholder="example@gmail.com"
-              className="mt-1"
-            />
+            <Label>Email</Label>
+            <Input name="email" value={input.email} onChange={changeEventHandler} />
           </div>
 
-          {/* Phone number */}
           <div className="mb-4">
-            <Label className="text-gray-700">Phone Number</Label>
-            <Input
-              type="text"
-              name="phoneNumber"
-              value={input.phoneNumber}
-              onChange={changeEventHandler}
-              placeholder="0000000000"
-              className="mt-1"
-            />
+            <Label>Phone Number</Label>
+            <Input name="phoneNumber" value={input.phoneNumber} onChange={changeEventHandler} />
           </div>
 
-          {/* Password */}
           <div className="mb-4">
-            <Label className="text-gray-700">Password</Label>
-            <Input
-              type="password"
-              name="password"
-              value={input.password}
-              onChange={changeEventHandler}
-              placeholder="********"
-              className="mt-1"
-            />
+            <Label>Password</Label>
+            <Input type="password" name="password" value={input.password} onChange={changeEventHandler} />
           </div>
 
-          {/* Role + File Upload */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
-
-            {/* Role selection */}
             <div>
-              <Label className="text-gray-700">Select Role</Label>
+              <Label>Select Role</Label>
               <RadioGroup className="flex gap-5 mt-2">
-                <div className="flex items-center gap-2">
-                  <Input
-                    type="radio"
-                    name="role"
-                    value="student"
-                    checked={input.role === "student"}
-                    onChange={changeEventHandler}
-                    className="cursor-pointer"
-                  />
-                  <Label>Student</Label>
-                </div>
+                <Input type="radio" name="role" value="student" checked={input.role === "student"} onChange={changeEventHandler} />
+                <Label>Student</Label>
 
-                <div className="flex items-center gap-2">
-                  <Input
-                    type="radio"
-                    name="role"
-                    value="recruiter"
-                    checked={input.role === "recruiter"}
-                    onChange={changeEventHandler}
-                    className="cursor-pointer"
-                  />
-                  <Label>Recruiter</Label>
-                </div>
+                <Input type="radio" name="role" value="recruiter" checked={input.role === "recruiter"} onChange={changeEventHandler} />
+                <Label>Recruiter</Label>
               </RadioGroup>
             </div>
 
-            {/* File upload */}
             <div>
-              <Label className="text-gray-700">Profile Picture</Label>
-              <div className="border border-gray-300 rounded-md p-2 flex items-center gap-3 bg-white mt-1">
-                <Upload className="w-5 h-5 text-gray-500" />
-                <Input
-                  type="file"
-                  accept="image/*"
-                  onChange={changeFileHandler}
-                  className="cursor-pointer border-none p-0"
-                />
-              </div>
+              <Label>Profile Picture</Label>
+              <Input type="file" accept="image/*" onChange={changeFileHandler} />
             </div>
           </div>
 
-          {/* Submit button */}
           {loading ? (
             <Button className="w-full mt-6" disabled>
               <Loader2 className="animate-spin mr-2" /> Please wait...
             </Button>
           ) : (
-            <Button type="submit" className="w-full mt-6 text-base">
+            <Button type="submit" className="w-full mt-6">
               Create Account
             </Button>
           )}
 
-          {/* Already have account */}
-          <p className="text-center mt-4 text-sm text-gray-700">
-            Already have an account?{" "}
-            <Link to="/login" className="text-blue-600 font-medium">
-              Login
-            </Link>
+          <p className="text-center mt-4 text-sm">
+            Already have an account? <Link to="/login">Login</Link>
           </p>
         </motion.form>
       </div>
