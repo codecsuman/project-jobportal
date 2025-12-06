@@ -20,12 +20,12 @@ const useGetAllJobs = () => {
           dispatch(setAllJobs(res.data.jobs));
         }
       } catch (error) {
-        console.log("❌ Failed to fetch jobs:", error);
+        console.log("Failed to fetch jobs:", error);
       }
     };
 
     fetchAllJobs();
-  }, [searchedQuery, dispatch]);   ✅ FIXED
+  }, [searchedQuery, dispatch]);
 };
 
 export default useGetAllJobs;
